@@ -9,33 +9,33 @@
 
 ## Introduction
 
-Nebula Importer is a CSV import tool for [Nebula Graph](https://github.com/vesoft-inc/nebula). It reads data from CSV files and inserts it into Nebula.
+**Nebula Importer** is a CSV import tool for [Nebula Graph](https://github.com/vesoft-inc/nebula). It reads data from CSV files and inserts it into **Nebula Graph**.
 
-Before you start Nebula Importer, ensure:
+Before you start using **Nebula Importer**, ensure the following conditions are met:
 
-* Nebula Graph is deployed
+* **Nebula Graph** is deployed
 * Schema is created
 
-Currently, there are three ways to deploy Nebula:
+Currently, there are three ways to deploy **Nebula Graph**:
 
 1. [nebula-docker-compose](https://github.com/vesoft-inc/nebula-docker-compose "nebula-docker-compose")
 2. [rpm Package](https://github.com/vesoft-inc/nebula/tree/master/docs/manual-EN/3.build-develop-and-administration/3.deploy-and-administrations/deployment)
 3. [from source](https://github.com/vesoft-inc/nebula/blob/master/docs/manual-EN/3.build-develop-and-administration/1.build/1.build-source-code.md)
 
-> The quickest way to deploy Nebula Graph is using [`docker-compose`](https://github.com/vesoft-inc/nebula-docker-compose).
+**Note**: It is recommended to deploy **Nebula Graph** using [`docker-compose`](https://github.com/vesoft-inc/nebula-docker-compose).
 
 ## Prepare Configuration File
 
-Nebula Importer reads the CSV file to be imported and Nebula server data through the YAML configuration file. Here's an [example](example/example.yaml) of the configuration file and the CSV file. Detail descriptions for the configuration file see the following section.
+**Nebula Importer** reads CSV files to be imported and data for the **Nebula Graph** server through the `YAML` configuration file. Here's an [example](example/example.yaml) of the configuration file and the CSV file. For details of the configuration file, refer to the following section.
 
 ```yaml
 version: v1rc1
 description: example
 ```
 
-* `version` is a **required** parameter that indicates the configure file's version, the default version is `v2rc1`.
-* `description` is an **optional** parameter that describes the configure file.
-* `clientSettings` takes care of all the Nebula related configurations.
+* `version` is a **required** parameter that indicates the version number of the configuration file. The default version is `v2rc1`.
+* `description` is an **optional** parameter that describes the configuration file.
+* `clientSettings` takes care of all the related configurations for **Nebula Graph**.
 
 ```yaml
 clientSettings:
@@ -48,16 +48,16 @@ clientSettings:
     address: 127.0.0.1:3699
 ```
 
-* `clientSettings.concurrency` is an optional parameter that shows the concurrency of Nebula Graph Client, i.e. the connection number of Nebula Graph Server, the default value is 10.
-* `clientSettings.channelBufferSize` is an optional parameter that shows the buffer size of the cache queue for each Nebula Graph Client, the default value is 128.
-* `clientSettings.space` is a **required** parameter that specifies which `space` the data will be importing into. Do not import data to multiple spaces at one time for performance sake.
-* `clientSettings.connection` is a **required** parameter that contains the `user`, `password` and `address` information of Nebula Graph Server.
+* `clientSettings.concurrency` is an optional parameter that shows the concurrency of **Nebula Graph** client, i.e. the connection number of the **Nebula Graph** server. The default value is `10`.
+* `clientSettings.channelBufferSize` is an optional parameter that shows the buffer size of the cache queue for each **Nebula Graph** client. The default value is `128`.
+* `clientSettings.space` is a **required** parameter that specifies which `space` the data will be imported to. Do not import data to multiple spaces at one time for performance sake.
+* `clientSettings.connection` is a **required** parameter that contains the `user`, `password` and `address` information of the **Nebula Graph** server.
 
 ### Files
 
-The log and data file related configurations are:
+Configurations related to the log and data files are:
 
-* `logPath`: **Optional**. Specifies log directory when importing data, default path is `/tmp/nebula-importer.log`.
+* `logPath`: **Optional**. Specifies log directory when you import data. The default path is `/tmp/nebula-importer.log`.
 * `files`: **Required**. An array type to configure different CSV files.
 
 ```yaml
@@ -74,18 +74,18 @@ files:
 
 ### CSV Data Files
 
-One CSV file can only store one type of vertex or edge. Vertices and edges of the different schema should be stored in different files.
+One CSV file can only store one type of vertex or edge. Vertices and edges of the different schemas must be stored in different files.
 
 * `path`: **Required**. Specifies the path where the CSV data file is stored. If a relative path is used, the path and directory of the current configuration file are spliced.
 * `failDataPath`: **Required**. Specifies the file to insert the failed data output so that the error data is appended later.
-* `batchSize`: **Optional**. Specifies the batch size of the inserted data, the default value is 128.
+* `batchSize`: **Optional**. Specifies the batch size of the inserted data. The default value is `128`.
 * `type & csv`:  **Required**. Specifies the file type. Currently, only CSV is supported. You can specify whether to include the header and the inserted and deleted labels in the CSV file.
-  * `withHeader`: The default value is false, the format of the header is described below.
-  * `withLabel`: The default value is false, the format of the label is described below.
+  * `withHeader`: The default value is `false`, the format of the header is described below.
+  * `withLabel`: The default value is `false`, the format of the label is described below.
 
 * `schema`: **Required**. Describes the metadata information of the current data file. The schema.type has only two values: vertex and edge.
-  * When type is specified as vertex, details should be described in the vertex field.
-  * When type is specified as edge, details should be described in edge field.
+  * When the type is specified as vertex, details must be described in the **vertex** field.
+  * When the type is specified as edge, details must be described in the **edge** field.
 
 #### `schema.vertex`
 
@@ -105,16 +105,16 @@ One CSV file can only store one type of vertex or edge. Vertices and edges of th
 
 ```
 
-`schema.vertex` is a **required** parameter that describes the schema information such as tags of the inserted vertex. Since sometimes one vertex contains several tags, different tags should be given in the `schema.vertex.tags` array.
+`schema.vertex` is a **required** parameter that describes the schema information such as tags of the inserted vertex. Since sometimes one vertex contains several tags, different tags must be given in the `schema.vertex.tags` array.
 
 Each tag contains the following two properties:
 
 * `name`: The tag's name.
 * `prop`: The tag's properties. Each property contains the following two fields:
-  * `name`: The property name, the same with the tag property in Nebula Graph
-  * `type`: The property type, currently support `bool`, `int`, `float`, `double`, `timestamp` and `string`.
+  * `name`: The property name, the same with the tag property in **Nebula Graph**.
+  * `type`: The property type, currently support for `bool`, `int`, `float`, `double`, `timestamp` and `string`.
 
-> Note: The order of properties in the above props must be the same as that of the corresponding data in the CSV data file.
+**Note**: The order of properties in the above props must be the same as that of the corresponding data in the CSV data file.
 
 #### `schema.edge`
 
@@ -132,29 +132,29 @@ schema:
 `schema.edge` is a **required** parameter that describes the schema information of the inserted edge. Each edge contains the following three properties:
 
 * `name`: The edge's name.
-* `withRanking`: Specifies the `rank` value of the given edge, used to tell different edges to share the same edge type and vertices.
-* `props`: Same as the above tag. Please be noted the property order here must be the same with that of the corresponding data in the CSV data file.
+* `withRanking`: Specifies the `rank` value of the given edge, which is used to tell different edges to share the same edge type and vertices.
+* `props`: Same as the above tag. Please be noted that the property order here must be the same with that of the corresponding data in the CSV data file.
 
-Details of all the configurations please refer to [Configuration Reference](docs/configuration-reference.md).
+For details of all the configurations, refer to [Configuration Reference](docs/configuration-reference.md).
 
 ## About the CSV Header
 
 Usually, you can add some descriptions in the first row of the CSV file to specify each column's type.
 
-### Data Without Header
+### Data without Header
 
-If the `csv.withHeader` is set to `false`, the CSV file only contains the data (no descriptions of the first row). Example of vertices and edges are as follow:
+If the `csv.withHeader` is set to `false`, the CSV file only contains the data (no descriptions of the first row). Examples of vertices and edges are as follows:
 
 #### Vertex Example
 
-Take tag `course` for example:
+Take tag **course** for example:
 
 ```csv
 101,Math,3,No5
 102,English,6,No11
 ```
 
-The first column is the vertex ID, the following three columns are the properties, corresponding to the course.name, course.credits and building.name in the configuration file. (See  `vertex.tags.props`).
+The first column is the vertex ID, the following three columns are the properties, corresponding to the course.name, course.credits and building.name in the configuration file. (See `vertex.tags.props`).
 
 #### Edge Example
 
@@ -165,15 +165,15 @@ Take edge type `choose` for example:
 200,102,3
 ```
 
-### Data With Header
+### Data with Header
 
-If the `csv.withHeader` is set to `false`, the CSV file only contains the data (no descriptions of the first row). Example of vertices and edges are as follow:
+If the `csv.withHeader` is set to `false`, the CSV file only contains the data (no descriptions of the first row). Examples of vertices and edges are as follows:
 
-The first two columns indicate source vertex and dest vertex ID, the third is the property, corresponding to choose.likeness in the configuration file. (If ranking is included, the third column should be rankings. The properties should follow behind ranking column.)
+The first two columns indicate source vertex and dest vertex ID, and the third is the property, corresponding to `choose.likeness` in the configuration file. (If ranking is included, the third column must be rankings. The properties must follow behind the ranking column.)
 
 ## CSV Data Example
 
-There will be two CSV data formats supported in the future. But now please use the first format which has no header line in your CSV data file.
+There will be two CSV data formats supported in the future. But now, you can use the first format which has no header line in your CSV data file.
 
 ### With Header Line
 
@@ -182,22 +182,22 @@ The format of each column is `<tag_name/edge_name>.<prop_name>:<prop_type>`:
 
 * `<tag_name/edge_name>` is the name of the vertex or edge.
 * `<prop_name>` is the property name.
-* `<prop_type>` is the property type. It can be `bool`, `int`, `float`, `double`, `string` and `timestamp`, the default type is `string`.
+* `<prop_type>` is the property type. It can be `bool`, `int`, `float`, `double`, `string` and `timestamp`. The default type is `string`.
 
 In the above `<prop_type>` field, the following keywords contain special semantics:
 
 * `:VID` is the vertex ID.
-* `:SRC_VID` is the source vertex VID.
-* `:DST_VID` is the dest vertex VID.
+* `:SRC_VID` is the source vertex ID.
+* `:DST_VID` is the dest vertex ID.
 * `:RANK` is the rank of the edge.
 * `:IGNORE` indicates this column will be ignored.
 * `:LABEL` indicates the columns that insert/delete `+/-`.
 
-> If the CSV file contains the header, the importer parses the schema of each row according to the header and ignores the `props` in YAML.
+**Note**: If the CSV file contains a header, the importer parses the schema of each row according to the header and ignores the `props` in the `YAML` confgiuration file.
 
-#### Example of Vertex CSV File With Header
+#### Example of Vertex CSV File with Header
 
-Take vertex course as example:
+Take vertex course for example:
 
 ```csv
 :LABEL,:VID,course.name,building.name:string,:IGNORE,course.credits:int
@@ -213,7 +213,7 @@ Take vertex course as example:
 -,
 ```
 
-Indicates the column is inserting (+) or deleting (-) operation.
+Indicates the column is for inserting (+) or deleting (-) operation.
 
 ##### :VID (Required）
 
@@ -224,9 +224,9 @@ Indicates the column is inserting (+) or deleting (-) operation.
 "uuid(""English"")"
 ```
 
-In the `:VID` column, in addition to the common integer values (such as 123), you can also use the two built-in functions `hash` and `uuid` to automatically calculate the VID of the generated vertex (for example, hash("Math")).
+In the `:VID` column, in addition to the common integer values (such as *123*), you can also use the two built-in functions `hash` and `uuid` to automatically calculate the `VID` of the generated vertex (for example, *hash("Math")*).
 
-> Note that the double quotes (") are escaped in the CSV file. For example, `hash("Math")` should be written as `"hash(""Math"")"`.
+**Note**: The double quotes (") are escaped in the CSV file. For example, `hash("Math")` must be written as `"hash(""Math"")"`.
 
 ##### Other Properties
 
@@ -238,9 +238,9 @@ English,2,6
 
 `:IGNORE` is to specify the column that you want to ignore when importing data. All columns except the `:LABEL` column can be in any order. Thus, for a large CSV file, you can flexibly select the columns you need by setting the header.
 
-> Because a VERTEX can contain multiple TAGs, the TAG name should be added to the header of the specified column (for example, it must be `course.credits`, rather than the abbreviated `credits`).
+**Note**: Because a VERTEX can contain multiple TAGs, the TAG name must be added to the header of the specified column (for example, it must be `course.credits`, rather than the abbreviated `credits`).
 
-#### Example of Edge CSV File With Header
+#### Example of Edge CSV File with Header
 
 Take edge `follow` for example:
 
@@ -250,24 +250,24 @@ Take edge `follow` for example:
 200,85.6,201,1
 ```
 
-In the preceding example, the source vertex of the edge is `:SRC_VID` (in column 4), the dest vertex of the edge is `:DST_VID` (in column 1), and the property on the edge is `follow.likeness:double`(in column 2), the ranking field of the edge is `:RANK` (in column 5, the default value is 0 if you do not specify).
+In the preceding example, the source vertex of the edge is `:SRC_VID` (in column 4), the dest vertex of the edge is `:DST_VID` (in column 1), the property on the edge is `follow.likeness:double`(in column 2), the **ranking** field of the edge is `:RANK` (in column 5, and the default value is `0` if you do not specify).
 
 ##### Label（Optional）
 
 * `+` means inserting
 * `-` means deleting
 
-The same with vertex, you can specify label in edge CSV file.
+The same is true for edges, you can specify the label in the CSV file for edges.
 
 ## Use This Importer Tool by Source Code or Docker
 
-After completing the configuration of the YAML file and the preparation of the (to be imported) CSV data file, you can use this tool to batch write to Nebula.
+After completing the configuration of the `YAML` file and the preparation of the (to be imported) CSV data file, you can use this tool to batch write to **Nebula Graph**.
 
 ### From Source code
 
-Nebula Importer is compiled with golang higher than **>=1.13**, so make sure that golang is installed on your system. The installation and configuration tutorial is referenced [here](docs/golang-install.md).
+**Nebula Importer** is compiled with `golang` greater than or equal to *1.13*. Ensure that `golang` is installed on your system. You can refer to the installation and configuration tutorial [here](docs/golang-install.md).
 
-Use `git` to clone the repository to local, go to the `nebula-importer/cmd` directory and execute the importer.
+Use `git` to clone the repository to your local computer, go to the `nebula-importer/cmd` directory and execute the importer.
 
 ``` bash
 $ git clone https://github.com/vesoft-inc/nebula-importer.git
@@ -275,11 +275,11 @@ $ cd nebula-importer/cmd
 $ go run importer.go --config /path/to/yaml/config/file
 ```
 
-`--config` is used to pass in the path to the YAML configuration file.
+`--config` is used to pass in the path to the `YAML` configuration file.
 
 ### From Docker
 
-With Docker, you don't have to install golang locally. Pull Nebula Importer's [Docker Image](https://hub.docker.com/r/vesoft/nebula-importer) to import. The only thing to do is to mount the local configuration file and the CSV data files into the container as follows:
+With `Docker`, you do not have to install `golang` locally. Pull Nebula Importer's [Docker Image](https://hub.docker.com/r/vesoft/nebula-importer) to import. The only thing to do is to mount the local configuration file and the CSV data files into the container as follows:
 
 ```bash
 $ docker run --rm -ti \
@@ -290,10 +290,12 @@ $ docker run --rm -ti \
     --config {your-config-file}
 ```
 
-* `{your-config-file}`: Replace with the absolute path of the local YAML configuration file
+**Note**:
+
+* `{your-config-file}`: Replace with the absolute path of the local `YAML` configuration file
 * `{your-csv-data-dir}`: Replace with the absolute path of the local CSV data file.
 
-> Note: It is recommended to use relative paths in `files.path`. But if you use a local absolute path, you need to carefully check the path mapped to Docker with this path.
+It is recommended to use the relative path in the `files.path` field. But if you use a local absolute path, you need to carefully check the path mapped to `Docker` with this path.
 
 ## TODO
 
