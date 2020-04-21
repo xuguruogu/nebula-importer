@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/vesoft-inc/nebula-importer/pkg/base"
@@ -359,14 +360,6 @@ func (r *Rank) validateAndReset(prefix string, defaultVal int) error {
 }
 
 func (e *Edge) FormatValues(record base.Record) string {
-	var cells []string
-	for i, prop := range e.Props {
-		if c, err := prop.FormatValue(record); err != nil {
-			logger.Fatalf("edge: %s, column: %d, error: %v", e.String(), i, err)
-		} else {
-			cells = append(cells, c)
-		}
-	}
 	rank := ""
 	if e.Rank != nil && e.Rank.Index != nil {
 		rank = fmt.Sprintf("@%s", record[*e.Rank.Index])
@@ -378,13 +371,37 @@ func (e *Edge) FormatValues(record base.Record) string {
 	} else {
 		srcVID = base.TryConvInt64(record[*e.SrcVID.Index])
 	}
-	var dstVID string
-	if e.DstVID.Function != nil {
-		dstVID = fmt.Sprintf("%s(%q)", *e.DstVID.Function, record[*e.DstVID.Index])
-	} else {
-		dstVID = base.TryConvInt64(record[*e.DstVID.Index])
+
+	//31404071286_7.0_6726684464:1:0.3125#578594353:1:0.272727#11182978668:1:0.444444#14271945912:1:0.583333#17474684606:1:0.555555#22675650421:1:0.571428#23637362272:1:0.5#3492208964:2:0.385714#859626702:2:0.648648#18031769849:2:0.323076#14292924610:2:0.75#5417098154:2:0.464285#11707977977:2:0.916666#2058324186:2:0.407407#7819901612:2:0.5#22644158118:2:0.391304#5448065047:2:0.214285#5293208629:2:0.285714#729254418:2:0.357142#6759559978:2:0.131578#18402787034:2:0.666666#18381597997:2:0.4#22842674317:2:0.058823#3614614401:3:0.692307#538945464:3:0.695652#4422974799:3:0.104477#4434309642:3:0.203125#12103106482:3:0.113043
+	var rows []string
+	{
+		tmp := strings.Split(record[*e.Props[0].Index], "&")
+		for _, r := range tmp {
+			rows = append(rows, strings.Split(r, "#")...)
+		}
 	}
-	return fmt.Sprintf(" %s->%s%s:(%s) ", srcVID, dstVID, rank, strings.Join(cells, ","))
+
+	var resultVec []string
+	cells := make([]string, 4)
+	for _, row := range rows {
+		parts := strings.Split(row, ":")
+		cells[2] = parts[1]
+		cells[3] = parts[2]
+		p := parts[0]
+		pparts := strings.Split(p, "_")
+		var dstVID string
+		if len(pparts) == 3 {
+			cells[0] = base.TryConvInt64(pparts[0])
+			cscore, _ := strconv.ParseFloat(pparts[1], 64)
+			cells[1] = fmt.Sprint(int64(cscore))
+			dstVID = pparts[2]
+		} else {
+			dstVID = p
+		}
+		dstVID = base.TryConvInt64(dstVID)
+		resultVec = append(resultVec, fmt.Sprintf(" %s->%s%s:(%s) ", srcVID, dstVID, rank, strings.Join(cells, ",")))
+	}
+	return strings.Join(resultVec, ",")
 }
 
 func (e *Edge) maxIndex() int {

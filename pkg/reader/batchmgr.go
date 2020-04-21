@@ -301,7 +301,8 @@ func (m *BatchMgr) makeEdgeBatchStmt(batch []base.Data) string {
 
 func (m *BatchMgr) makeEdgeInsertStmt(batch []base.Data) string {
 	var builder strings.Builder
-	builder.WriteString(m.InsertStmtPrefix)
+	// builder.WriteString(m.InsertStmtPrefix)
+	builder.WriteString("INSERT EDGE f_user_room(cid,c_score,forder,score) VALUES ")
 	batchSize := len(batch)
 	for i := 0; i < batchSize; i++ {
 		builder.WriteString(m.Schema.Edge.FormatValues(batch[i].Record))

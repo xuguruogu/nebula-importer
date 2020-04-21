@@ -9,7 +9,6 @@ import (
 	"github.com/vesoft-inc/nebula-go/nebula/graph"
 	"github.com/vesoft-inc/nebula-importer/pkg/base"
 	"github.com/vesoft-inc/nebula-importer/pkg/config"
-	"github.com/vesoft-inc/nebula-importer/pkg/logger"
 )
 
 type ClientPool struct {
@@ -49,17 +48,17 @@ func NewClientPool(settings *config.NebulaClientSettings, statsCh chan<- base.St
 }
 
 func (p *ClientPool) Close() {
-	stmt := `UPDATE CONFIGS storage:wal_ttl=86400;
-          UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = false };`
+	// stmt := `UPDATE CONFIGS storage:wal_ttl=86400;
+	//       UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = false };`
 	for i := 0; i < p.concurrency; i++ {
 		if p.Conns[i] != nil {
-			if resp, err := p.Conns[i].Execute(stmt); err != nil {
-				logger.Errorf("Client %d fails to open compaction option when close connection, error: %s", i, err)
-			} else {
-				if resp.GetErrorCode() != graph.ErrorCode_SUCCEEDED {
-					logger.Errorf("Client %d fails to open compaction option when close connection, error code: %v, message: %s", i, resp.GetErrorCode(), resp.GetErrorMsg())
-				}
-			}
+			// if resp, err := p.Conns[i].Execute(stmt); err != nil {
+			// 	logger.Errorf("Client %d fails to open compaction option when close connection, error: %s", i, err)
+			// } else {
+			// 	if resp.GetErrorCode() != graph.ErrorCode_SUCCEEDED {
+			// 		logger.Errorf("Client %d fails to open compaction option when close connection, error code: %v, message: %s", i, resp.GetErrorCode(), resp.GetErrorMsg())
+			// 	}
+			// }
 			p.Conns[i].Disconnect()
 		}
 		if p.requestChs[i] != nil {
@@ -69,7 +68,8 @@ func (p *ClientPool) Close() {
 }
 
 func (p *ClientPool) Init() error {
-	stmt := fmt.Sprintf("USE %s; UPDATE CONFIGS storage:wal_ttl=3600; UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = true };", p.space)
+	// stmt := fmt.Sprintf("USE %s; UPDATE CONFIGS storage:wal_ttl=3600; UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = true };", p.space)
+	stmt := fmt.Sprintf("USE %s; UPDATE CONFIGS storage:wal_ttl=600; UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = true, write_buffer_size = 1073741824, max_write_buffer_number = 1024 };", p.space)
 	for i := 0; i < p.concurrency; i++ {
 		if resp, err := p.Conns[i].Execute(stmt); err != nil {
 			return err
