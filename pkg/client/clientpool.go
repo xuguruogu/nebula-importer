@@ -69,7 +69,7 @@ func (p *ClientPool) Close() {
 
 func (p *ClientPool) Init() error {
 	// stmt := fmt.Sprintf("USE %s; UPDATE CONFIGS storage:wal_ttl=3600; UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = true };", p.space)
-	stmt := fmt.Sprintf("USE %s; UPDATE CONFIGS storage:wal_ttl=600; UPDATE CONFIGS storage:rocksdb_column_family_options = { disable_auto_compactions = true, write_buffer_size = 1073741824, max_write_buffer_number = 1024 };", p.space)
+	stmt := fmt.Sprintf("USE %s;", p.space)
 	for i := 0; i < p.concurrency; i++ {
 		if resp, err := p.Conns[i].Execute(stmt); err != nil {
 			return err
